@@ -1,0 +1,22 @@
+{
+  "name": "back-end",
+  "version": "1.0.0",
+  "description": "back-end server for softuni react prokject",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marinvch/Server.git"
+  },
+  "author": "Marin Cholakov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/marinvch/Server/issues"
+  },
+  "homepage": "https://github.com/marinvch/Server#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
