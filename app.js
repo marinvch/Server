@@ -18,6 +18,10 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+//Setting up Routes
+
+app.use("/posts", require("./routes/postRoutes"));
+
 //Setting up Database
 
 console.log("Database is starting connection");
