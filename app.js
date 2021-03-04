@@ -21,19 +21,22 @@ app.listen(PORT, () => {
 //Setting up Routes
 
 app.use("/posts", require("./routes/postRoutes"));
+app.use("/users", require("./routes/userRoutes"));
 
 //Setting up Database
 
 console.log("Database is starting connection");
 
-mongoose.connect(
-  process.env.MONGODB_URI,
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  (err) => {
-    if (err) {
-      return console.error(err);
-    }
+const options = {
+  useFindAndModify: true,
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+};
 
-    console.log(`Database is connected!!!`);
+mongoose.connect(process.env.MONGODB_URI, options, (err) => {
+  if (err) {
+    return console.error(err);
   }
-);
+
+  console.log(`Database is connected!!!`);
+});
