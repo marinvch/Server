@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const User = require("../models/userModel");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 router.post("/register", async (req, res) => {
@@ -26,7 +26,7 @@ router.post("/register", async (req, res) => {
       username = email;
     }
 
-    const existingUser = await User.findOne({ email: email });
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return res
@@ -38,37 +38,90 @@ router.post("/register", async (req, res) => {
 
     //incrypting password
     const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const passwordHash = await bcrypt.hash(password, salt);
 
     const newUser = new User({
       email,
-      password: hashedPassword,
+      passwordHash,
       username,
     });
+    console.log(newUser);
 
     const savedUser = await newUser.save();
 
-    res.json(savedUser);
-
     //adding Token to the user
-
-    const token = jwt.sign(
+    let token = jwt.sign(
       {
         user: savedUser._id,
       },
-      process.env.TOKEN_SECRET
+      process.env.JWT_SECRET
     );
 
-    //sending token with http cookie
+    //send token in coockie
 
-    res.cookie("token", token, {
-      httpOnly: true,
-    });
-
-    console.log(token);
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+      })
+      .send();
   } catch (err) {
     res.status(500).json({ err: err.message });
   }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // validate
+
+    if (!email || !password)
+      return res
+        .status(400)
+        .json({ errorMessage: "Please enter all required fields." });
+
+    const existingUser = await User.findOne({ email });
+    if (!existingUser)
+      return res.status(401).json({ errorMessage: "Wrong email or password." });
+
+    const passwordCorrect = await bcrypt.compare(
+      password,
+      existingUser.passwordHash
+    );
+    if (!passwordCorrect)
+      return res.status(401).json({ errorMessage: "Wrong email or password." });
+
+    // sign the token
+
+    const token = jwt.sign(
+      {
+        user: existingUser._id,
+      },
+      process.env.JWT_SECRET
+    );
+
+    // send the token in a HTTP-only cookie
+
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      })
+      .send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+router.get("/logout", (req, res) => {
+  res
+    .cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(0),
+    })
+    .send();
 });
 
 module.exports = router;

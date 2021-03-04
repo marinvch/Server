@@ -1,42 +1,43 @@
 const express = require("express");
-const cors = require("cors");
 const mongoose = require("mongoose");
-require("dotenv").config();
+const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
-//Seting up Express
+dotenv.config();
+
+// set up server
 
 const app = express();
-
-app.use(cors());
-app.use(express.json());
-
 const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
 
-console.log("Server is waiting for start");
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+         ],
+    credentials: true,
+  })
+);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// connect to mongoDB
 
-//Setting up Routes
-
-app.use("/posts", require("./routes/postRoutes"));
-app.use("/users", require("./routes/userRoutes"));
-
-//Setting up Database
-
-console.log("Database is starting connection");
-
-const options = {
-  useFindAndModify: true,
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-};
-
-mongoose.connect(process.env.MONGODB_URI, options, (err) => {
-  if (err) {
-    return console.error(err);
+mongoose.connect(
+  process.env.MONGODB_URI,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  (err) => {
+    if (err) return console.error(err);
+    console.log("Connected to MongoDB");
   }
+);
 
-  console.log(`Database is connected!!!`);
-});
+// set up routes
+
+app.use("/auth", require("./routes/userRoutes"));
+app.use("/posts", require("./routes/postRoutes"));
