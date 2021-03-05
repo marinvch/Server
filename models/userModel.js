@@ -7,25 +7,13 @@ const userSchema = new mongoose.Schema({
     trim: true,
     unique: true,
   },
-  username: {
-    type: String,
-    maxLength: 50,
-  },
   passwordHash: {
     type: String,
     minlength: 8,
     require: true,
   },
-  role: {
-    type: Number,
-    default: 0,
-  },
-  avatar: {
-    type: String,
-  },
-  token: {
-    type: String,
-  },
+  topics: [{ type: mongoose.Schema.Types.ObjectId, ref: "Topic" }],
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comments" }],
 });
 
 const User = mongoose.model("user", userSchema);

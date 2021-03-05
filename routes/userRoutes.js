@@ -1,13 +1,11 @@
 const router = require("express").Router();
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 router.post("/register", async (req, res) => {
   try {
-    let { email, username, password, checkPassword } = req.body;
+    let { email, password, checkPassword } = req.body;
 
-    //validation
     if (!email || !password || !checkPassword) {
       return res.status(400).json({ msg: "Not all fields were not entered!!" });
     }
@@ -34,8 +32,6 @@ router.post("/register", async (req, res) => {
         .json({ msg: "User with this email already exist!!!" });
     }
 
-    //seting username
-
     //incrypting password
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
@@ -48,22 +44,6 @@ router.post("/register", async (req, res) => {
     console.log(newUser);
 
     const savedUser = await newUser.save();
-
-    //adding Token to the user
-    let token = jwt.sign(
-      {
-        user: savedUser._id,
-      },
-      process.env.JWT_SECRET
-    );
-
-    //send token in coockie
-
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-      })
-      .send();
   } catch (err) {
     res.status(500).json({ err: err.message });
   }
@@ -72,8 +52,6 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // validate
 
     if (!email || !password)
       return res
@@ -90,25 +68,7 @@ router.post("/login", async (req, res) => {
     );
     if (!passwordCorrect)
       return res.status(401).json({ errorMessage: "Wrong email or password." });
-
-    // sign the token
-
-    const token = jwt.sign(
-      {
-        user: existingUser._id,
-      },
-      process.env.JWT_SECRET
-    );
-
-    // send the token in a HTTP-only cookie
-
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-      })
-      .send();
+    console.log("loged in");
   } catch (err) {
     console.error(err);
     res.status(500).send();
