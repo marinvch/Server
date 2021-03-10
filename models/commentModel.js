@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
-let PostsSchema = mongoose.Schema({
+let CommentSchema = new mongoose.Schema({
+  _id: mongoose.Schema.ObjectId,
   title: {
-    required: true,
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "post",
   },
   content: {
     required: true,
@@ -16,9 +17,8 @@ let PostsSchema = mongoose.Schema({
   postedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
-    required: true,
   },
 });
 
-let PostsSchema = mongoose.model("post", PostsSchema);
-module.exports = PostsSchema;
+let Comment = mongoose.model("comment", CommentSchema);
+module.exports = Comment;
