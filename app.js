@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv"); 
+const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
@@ -9,12 +9,18 @@ dotenv.config();
 //Setting server
 
 const app = express();
-app.use(cors());
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
 
+//Middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: ["http://localhost:3001"],
+    credentials: true,
+  })
+);
 
 //Connect to Databse
 const options = {
