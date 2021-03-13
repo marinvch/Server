@@ -1,12 +1,11 @@
 const router = require("express").Router();
-const Post = require("../models/postModel");
-const User = require("../models/userModel");
-const Comment = require("../models/commentModel");
 const mongoose = require("mongoose");
+const Comment = require("../models/commentModel");
+const auth = require("../middleware/auth");
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
-    let { content, createdAt } = req.body;
+    let { title, content, createdAt, postedBy } = req.body;
 
     if (!content) {
       return res
@@ -15,18 +14,53 @@ router.post("/", async (req, res) => {
     }
 
     const newComment = new Comment({
+      _id: new mongoose.Types.ObjectId(),
       title,
       content,
       createdAt,
-      postedBy: new mongoose.Types.ObjectId(),
+      postedBy,
     });
 
     newComment.save();
     console.log(newComment);
+    res.json(newComment)
   } catch (error) {
     console.error(error);
     res.status(500).send();
   }
+});
+
+//Get all Posts
+
+router.get("/", async (req, res) => {
+  const allComments = await Comment.find();
+  console.log(allPosts + "--->");
+});
+
+//Edit Comments
+router.put("/:id", async (req, res) => {
+  const { content } = req.body;
+
+  let editComment = {
+    title,
+    content,
+  };
+  console.log(editPost);
+  const editedComment = await Comment.findByIdAndUpdate(
+    req.params.id,
+    editComment,
+    {
+      new: true,
+    }
+  ).exec();
+  editedComment.save();
+  console.log(editedComment);
+});
+
+//DeletePost
+router.delete("/:id", async (req, res) => {
+  await Comment.findByIdAndDelete(req.params.id).populate("user").exec();
+  console.log("Post has been deleted");
 });
 
 module.exports = router;

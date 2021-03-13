@@ -2,6 +2,7 @@ const router = require("express").Router();
 const mongoose = require("mongoose");
 const Post = require("../models/postModel");
 const auth = require("../middleware/auth");
+const User = require("../models/commentModel");
 
 router.post("/", auth, async (req, res) => {
   try {
@@ -28,6 +29,9 @@ router.post("/", auth, async (req, res) => {
       createdAt,
       author,
     });
+    console.log(userPosts);
+
+    console.log(author);
     await newPost.save();
     res.json(newPost);
   } catch (err) {
