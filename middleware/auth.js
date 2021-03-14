@@ -9,7 +9,7 @@ function auth(req, res, next) {
 
     const verify = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = verify.user;
+    userId = verify.id;
     next();
   } catch (err) {
     res.status(401).json({ errorMessage: "Unauthorized" });

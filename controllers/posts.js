@@ -1,4 +1,5 @@
-import Post from "../models/postModel.js";
+import Post from "../models/post.js";
+import mongoose from "mongoose";
 
 export const getPosts = async (req, res) => {
   try {
@@ -13,15 +14,44 @@ export const getPosts = async (req, res) => {
 };
 
 export const createPost = async (req, res) => {
-  const post = req.body;
+  const { title, content, createdAt, author } = req.body;
 
-  const newPost = new Post(post);
   try {
+    const existingPost = await Post.findOne({ title });
+
+    if (existingPost) {
+      return res.status(404).json({ message: "Title with this name exist." });
+    }
+
+    const newPost = new Post({
+      title,
+      content,
+      createdAt,
+      author,
+    });
     await newPost.save();
 
-    res.status(201).json(newPost);
+    console.log(newPost);
+    res.send("Post created");
+
+    res.status(201);
   } catch (error) {
     res.status(409).json({ message: error.message });
   }
-  res.send("Post created");
 };
+
+export const updatePost = async (req, res) => {
+  const { id: _id } = req.params;
+  const post = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(404).send("No post with that id");
+  }
+
+  const updatedPost = await Post.findByIdAndUpdate(_id, post, { new: true });
+
+  res.json(updatedPost);
+};
+export const getPost = async (req, res) => {};
+export const likePost = async (req, res) => {};
+export const deletePost = async (req, res) => {};

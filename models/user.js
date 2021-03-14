@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 let userSchema = new mongoose.Schema({
-  _id: mongoose.Schema.ObjectId,
   email: {
     type: String,
     required: true,
@@ -10,9 +9,8 @@ let userSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
+  id: { type: String },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
 });
 
-const User = mongoose.model("user", userSchema);
-
-module.exports = User;
+export default mongoose.model("User", userSchema);
