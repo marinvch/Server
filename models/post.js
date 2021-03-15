@@ -12,8 +12,7 @@ let PostSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-
-  _comments: [
+  comments: [
     {
       type: mongoose.Types.ObjectId,
       ref: "Comment",
