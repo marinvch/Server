@@ -1,6 +1,5 @@
 import Post from "../models/post.js";
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
 
 export const getPosts = async (req, res) => {
   try {
@@ -17,8 +16,7 @@ export const createPost = async (req, res) => {
 
   try {
     const existingPost = await Post.findOne({ title });
-    const userId = jwt.decode(req.cookies.token);
-
+    const userId = req.user;
     if (existingPost) {
       return res.status(404).json({ message: "Title with this name exist." });
     }
@@ -30,6 +28,8 @@ export const createPost = async (req, res) => {
       author: userId.user,
     });
     await newPost.save();
+
+    console.log(newPost);
 
     res.send("Post created");
 

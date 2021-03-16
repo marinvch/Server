@@ -4,6 +4,7 @@ import {
   getUser,
   register,
   login,
+  loggedIn,
   userLogout,
   userUpdate,
   userDelete,
@@ -13,6 +14,7 @@ const router = express.Router();
 router.get("/", getUser);
 router.post("/register", register);
 router.post("/login", login);
+router.get("/logedin", loggedIn);
 router.get("/logout", userLogout);
 router.put("/:id", userUpdate);
 router.delete("/:id", userDelete);

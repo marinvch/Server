@@ -78,6 +78,18 @@ export const login = async (req, res) => {
   }
 };
 
+export const loggedIn = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.json(false);
+    }
+    res.send(true);
+  } catch (err) {
+    res.json(false);
+  }
+};
+
 export const getUser = async (req, res) => {
   try {
     const users = User.find();
