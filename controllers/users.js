@@ -1,11 +1,11 @@
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-
+import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
 export const register = async (req, res) => {
-  const { email, password, confirmPassword } = req.body;
   try {
+    const { email, password, confirmPassword } = req.body;
+
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -25,29 +25,17 @@ export const register = async (req, res) => {
       password: hashedPassword,
     });
 
-    const token = jwt.sign(
-      { email: newUser.email, id: newUser._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-      })
-      .send();
-
     newUser.save();
-
-    res.status(200).json({ newUser, token });
+    res.json(newUser);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
   try {
+    const { email, password } = req.body;
+
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
       return res.status(404).json({ message: "User doesn't exist." });
@@ -62,79 +50,64 @@ export const login = async (req, res) => {
       return res.status(404).json({ message: "Invalid Credentials." });
     }
 
-    const token = jwt.sign({ user: existingUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-      })
-      .send();
-
-    res.status(200).json({ result: existingUser, token });
+    res.json({
+      token,
+      user: {
+        id: existingUser._id,
+        email: existingUser.email,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
-};
-
-export const loggedIn = async (req, res) => {
-  try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res.json(false);
-    }
-    res.send(true);
-  } catch (err) {
-    res.json(false);
-  }
-};
-
-export const getUser = async (req, res) => {
-  try {
-    const users = User.find();
-    if (!user) {
-      return res.status(404).json({ message: "User doesn't exist." });
-    }
-    res.status(200).json({ result: users });
-  } catch (err) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
-};
-
-export const userLogout = async (req, res) => {
-  try {
-    res
-      .cookie("token", "", {
-        httpOnly: true,
-        expires: new Date(0),
-      })
-      .status(200)
-      .json({ message: "You are logedout" });
-  } catch (err) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
-};
-
-export const userUpdate = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { username, password } = req.body;
-    models.User.update({ _id: id }, { username, password })
-      .then((updatedUser) => res.send(updatedUser))
-      .catch(next);
-  } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
 
 export const userDelete = async (req, res) => {
   try {
-    const id = req.params.id;
-    models.User.deleteOne({ _id: id })
-      .then((removedUser) => res.send(removedUser))
-      .catch(next);
-  } catch (err) {
+    const deletedUser = await User.findByIdAndDelete(req.user);
+    res.json(deletedUser);
+    console.log(req.user);
+  } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
   }
+};
+
+export const validToken = async (req, res) => {
+  try {
+    const token = req.header("x-auth-token");
+    if (!token) {
+      return res.json(false);
+    }
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!verified) {
+      return res.json(false);
+    }
+    const user = await User.findById(verified.id);
+
+    if (!user) {
+      return res.json(false);
+    }
+
+    return res.json(true);
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const getUser = async (req, res) => {
+  const user = await User.findById(req.user);
+  res.json({
+    email: user.email,
+    id: user._id,
+  });
+};
+
+export const allUsers = async (req, res) => {
+  const users = await User.find({});
+  res.send(users);
 };
