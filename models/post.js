@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 let PostSchema = new mongoose.Schema({
-  title: String,
-  content: String,
+  title: { type: String, required: true },
+  content: { type: String, required: true },
   createdAt: {
     type: Date,
     default: new Date(),
@@ -10,7 +10,6 @@ let PostSchema = new mongoose.Schema({
   author: {
     type: mongoose.Types.ObjectId,
     ref: "User",
-    required: true,
   },
   comments: [
     {

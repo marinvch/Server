@@ -28,9 +28,6 @@ app.use(
 app.use("/auth", userRoutes);
 app.use("/posts", postRoutes);
 
-///credetntials to .env file
-dotenv.config();
-
 //Setup server port
 const PORT = process.env.PORT || 5000;
 

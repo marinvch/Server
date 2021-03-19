@@ -9,6 +9,10 @@ let userSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
+  username: {
+    required: true,
+    type: String,
+  },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
 });
 

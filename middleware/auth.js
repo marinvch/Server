@@ -1,21 +1,25 @@
 import jwt from "jsonwebtoken";
+import User from "../models/user.js";
 
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
-    const token = req.header("x-auth-token");
-
-    if (!token) {
-      res.status(401).json({ message: "No authentication." });
+    const { authorization } = req.headers;
+    if (!authorization) {
+      res.status(401).json({ error: "Need to be logged in." });
     }
 
-    const verifyed = jwt.verify(token, process.env.JWT_SECRET);
+    const token = authorization.replace("Bearer ", "");
 
-    if (!verifyed) {
-      res.status(401).json({ message: "No authentication." });
-    }
-
-    req.user = verifyed.id;
-    next();
+    jwt.verify(token, process.env.JWT_SECRET, async (err, playload) => {
+      if (err) {
+        return res.status(401).json({ error: "Need to be logged in." });
+      }
+      const { _id } = playload;
+      await User.findById(_id).then((userdata) => {
+        req.user = userdata;
+        next();
+      });
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

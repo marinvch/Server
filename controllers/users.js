@@ -4,31 +4,36 @@ import User from "../models/user.js";
 
 export const register = async (req, res) => {
   try {
-    const { email, password, confirmPassword } = req.body;
+    const { email, username, password, confirmPassword } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    if (!email || !username || !password || !confirmPassword) {
+      return res.status(422).json({ error: "Need to fill al fields." });
+    }
 
-    if (existingUser) {
+    const findUser = await User.findOne({ email });
+
+    if (findUser) {
       return res
-        .status(404)
-        .json({ message: "User with this email already exist." });
+        .status(422)
+        .json({ error: "User with this email already exist." });
     }
 
     if (password !== confirmPassword) {
-      return res.status(409).json({ message: "Passwords don't match" });
+      return res.status(409).json({ error: "Passwords don't match." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const newUser = await User.create({
       email,
+      username,
       password: hashedPassword,
     });
 
     newUser.save();
-    res.json(newUser);
+    res.json({ message: "Registration successful." });
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(422).json({ error: error.message });
   }
 };
 
@@ -36,78 +41,27 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
-    if (!existingUser) {
-      return res.status(404).json({ message: "User doesn't exist." });
+    if (!email || !password) {
+      return res.status(422).json({ error: "Please enter all fields." });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      existingUser.password
-    );
+    const findUser = await User.findOne({ email });
+
+    if (!findUser) {
+      return res.status(422).json({ error: "Invalid Credentials." });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, findUser.password);
 
     if (!isPasswordCorrect) {
-      return res.status(404).json({ message: "Invalid Credentials." });
+      return res.status(422).json({ error: "Invalid Credentials." });
     }
 
-    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    // res.json({ message: "successfully loged In" });
 
-    res.json({
-      token,
-      user: {
-        id: existingUser._id,
-        email: existingUser.email,
-      },
-    });
+    const token = jwt.sign({ _id: findUser._id }, process.env.JWT_SECRET);
+    res.json({ token });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
+    res.status(500).json({ error: "Something went wrong" });
   }
-};
-
-export const userDelete = async (req, res) => {
-  try {
-    const deletedUser = await User.findByIdAndDelete(req.user);
-    res.json(deletedUser);
-    console.log(req.user);
-  } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
-};
-
-export const validToken = async (req, res) => {
-  try {
-    const token = req.header("x-auth-token");
-    if (!token) {
-      return res.json(false);
-    }
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-
-    if (!verified) {
-      return res.json(false);
-    }
-    const user = await User.findById(verified.id);
-
-    if (!user) {
-      return res.json(false);
-    }
-
-    return res.json(true);
-  } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
-};
-
-export const getUser = async (req, res) => {
-  const user = await User.findById(req.user);
-  res.json({
-    email: user.email,
-    id: user._id,
-  });
-};
-
-export const allUsers = async (req, res) => {
-  const users = await User.find({});
-  res.send(users);
 };
