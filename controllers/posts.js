@@ -51,6 +51,19 @@ export const userPosts = async (req, res) => {
     res.status(409).json({ message: error.message });
   }
 };
+
+export const editPost = async (req, res) => {
+  const { id: _id } = req.params;
+  const post = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(404).send("No post with that id");
+  }
+
+  const updatedPost = await Post.findByIdAndUpdate(_id, post, { new: true });
+
+  res.json(updatedPost);
+};
 // export const updatePost = async (req, res) => {
 //   const { id: _id } = req.params;
 //   const post = req.body;
@@ -75,7 +88,7 @@ export const userPosts = async (req, res) => {
 //   res.json(post);
 // };
 // export const likePost = async (req, res) => {};
-// export const deletePost = async (req, res) => {};
+export const deletePost = async (req, res) => {};
 
 // export const userPost = async (req, res) => {
 //   try {

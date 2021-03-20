@@ -1,25 +1,21 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
 
-const auth = async (req, res, next) => {
+const auth = async function (req, res, next) {
   try {
-    const { authorization } = req.headers;
-    if (!authorization) {
-      res.status(401).json({ error: "Need to be logged in." });
-    }
+    const token = req.header("x-auth-token");
+    if (!token)
+      return res
+        .status(401)
+        .json({ msg: "No authentication token, authorization denied." });
 
-    const token = authorization.replace("Bearer ", "");
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified)
+      return res
+        .status(401)
+        .json({ msg: "Token verification failed, authorization denied." });
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, playload) => {
-      if (err) {
-        return res.status(401).json({ error: "Need to be logged in." });
-      }
-      const { _id } = playload;
-      await User.findById(_id).then((userdata) => {
-        req.user = userdata;
-        next();
-      });
-    });
+    req.user = verified.id;
+    next();
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

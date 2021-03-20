@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 
 import userRoutes from "./routes/user.js";
-import postRoutes from "./routes/posts.js";
+import postRoutes from "./routes/post.js";
 
 //Setting server
 

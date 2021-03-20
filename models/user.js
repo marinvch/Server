@@ -10,7 +10,6 @@ let userSchema = new mongoose.Schema({
     type: String,
   },
   username: {
-    required: true,
     type: String,
   },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
