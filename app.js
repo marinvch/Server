@@ -14,7 +14,6 @@ import commentRoutes from "./routes/post.js";
 
 const app = express();
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -35,7 +34,7 @@ const PORT = process.env.PORT || 5000;
 
 //Connect to Databse
 mongoose
-  .connect(process.env.MDB_CONNECTION, {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -48,3 +47,5 @@ mongoose
   });
 
 mongoose.set("useFindAndModify", false);
+
+app.use(express.static("client/build"));
