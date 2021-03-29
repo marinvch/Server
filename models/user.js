@@ -6,8 +6,8 @@ let userSchema = new mongoose.Schema({
     required: true,
   },
   password: {
-    required: true,
     type: String,
+    required: true,
   },
   username: {
     type: String,

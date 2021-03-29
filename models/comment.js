@@ -18,13 +18,13 @@ const CommentSchema = new Schema({
     required: true,
   },
   // References User collection
-  _author: {
+  author: {
     type: Schema.ObjectId,
     ref: "User",
     required: true,
   },
   // References Post collection
-  _post: {
+  post: {
     type: Schema.ObjectId,
     ref: "Post",
   },

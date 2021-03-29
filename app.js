@@ -8,6 +8,7 @@ dotenv.config();
 
 import userRoutes from "./routes/user.js";
 import postRoutes from "./routes/post.js";
+import commentRoutes from "./routes/post.js";
 
 //Setting server
 
@@ -27,6 +28,7 @@ app.use(
 //Routes
 app.use("/auth", userRoutes);
 app.use("/posts", postRoutes);
+app.use("/comments", commentRoutes);
 
 //Setup server port
 const PORT = process.env.PORT || 5000;

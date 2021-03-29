@@ -5,11 +5,11 @@ import User from "../models/user.js";
 export const register = async (req, res) => {
   try {
     let { email, password, confirmPassword, username } = req.body;
-    console.log(email, password, confirmPassword, username);
 
     // validate
+    if (!username) username = email;
 
-    if (!email || !password || !confirmPassword)
+    if (!email || !password || !confirmPassword || !username)
       return res.status(400).json({ msg: "Not all fields have been entered." });
     if (password.length < 5)
       return res
@@ -25,8 +25,6 @@ export const register = async (req, res) => {
       return res
         .status(400)
         .json({ msg: "An account with this email already exists." });
-
-    if (!username) username = email;
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
@@ -100,10 +98,12 @@ export const validToken = async (req, res) => {
   }
 };
 
-// export const home = async (req, res) => {
-//   const user = await User.findById(req.user);
-//   res.json({
-//     username: user.username,
-//     id: user._id,
-//   });
-// };
+export const currentUser = async (req, res) => {
+  const user = await User.findById(req.user);
+  res.json({
+    username: user.username,
+    id: user._id,
+    posts: user.posts,
+  });
+};
+

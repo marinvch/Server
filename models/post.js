@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 let PostSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
-  createdAt: {
-    type: Date,
-    default: new Date(),
+  createdAt: { type: String },
+  likes: {
+    type: Number,
+    default: 0,
   },
   author: {
     type: mongoose.Types.ObjectId,
