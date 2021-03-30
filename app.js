@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import * as path from "path";
 
 dotenv.config();
 
@@ -48,7 +47,3 @@ mongoose
 
 mongoose.set("useFindAndModify", false);
 
-app.use(express.static(path.join("client")));
-app.get("/", (req, res) => {
-  res.sendFile(path.join);
-});
