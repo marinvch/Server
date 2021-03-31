@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import path from "path";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.js";
 import postRoutes from "./routes/post.js";
@@ -12,12 +13,16 @@ dotenv.config();
 
 const app = express();
 
+app.use(express.static(path.join("build")));
+
 app.use(
   cors({
     origin: ["http://localhost:3000", "http://forum.marinvch.eu"],
     credentials: true,
   })
 );
+
+app.use(express.static(path.join("build", "../client/public")));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
