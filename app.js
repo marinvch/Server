@@ -2,12 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-
-dotenv.config();
-
 import userRoutes from "./routes/user.js";
 import postRoutes from "./routes/post.js";
 import commentRoutes from "./routes/post.js";
+
+dotenv.config();
 
 //Setting server
 
@@ -17,10 +16,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
-  cors({
-    origin: ["http://forum.marinvch.eu/"],
-    credentials: true,
-  })
+  cors()
+  // cors({
+  //   origin: ["http://forum.marinvch.eu/"],
+  //   credentials: true,
+  // })
 );
 
 //Routes
@@ -46,4 +46,3 @@ mongoose
   });
 
 mongoose.set("useFindAndModify", false);
-
