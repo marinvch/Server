@@ -1,7 +1,7 @@
 {
   "name": "back-end",
   "version": "1.0.0",
-  "description": "back-end server for softuni react prokject",
+  "description": "back-end server for softuni react project",
   "main": "app.js",
   "type": "module",
   "scripts": {
