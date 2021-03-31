@@ -25,17 +25,22 @@ app.use("/comments", commentRoutes);
 const PORT = process.env.PORT || 5000;
 
 //Connect to Databse
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+   
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
-const dbConnection = mongoose.connection;
-dbConnection.on();
+mongoose.set("useFindAndModify", false);
 
-console.log("Mongoose connected");
-
-app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
+ app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
 
 // if (process.env.NODE_ENV === "production") {
 //   app.use(express.static(path.join("build", "index.html")));
