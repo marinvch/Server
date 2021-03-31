@@ -10,11 +10,9 @@ import commentRoutes from "./routes/post.js";
 dotenv.config();
 
 //Setting server
-
 const app = express();
 
 app.use(cors());
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -42,6 +40,6 @@ mongoose
 
 mongoose.set("useFindAndModify", false);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join("build")));
-}
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static(path.join("build", "index.html")));
+// }
