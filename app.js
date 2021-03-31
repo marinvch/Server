@@ -16,18 +16,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
-<<<<<<< HEAD
-  cors()
-  // cors({
-  //   origin: ["http://forum.marinvch.eu/"],
-  //   credentials: true,
-  // })
-=======
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://forum.marinvch.eu/"],
     credentials: true,
   })
->>>>>>> parent of 2bca503 (Update app.js)
 );
 
 //Routes
