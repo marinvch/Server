@@ -30,9 +30,10 @@ mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-console.log('Mongoose connected')
+const dbConnection = mongoose.connection;
+dbConnection.on();
 
-mongoose.set("useFindAndModify", false);
+console.log("Mongoose connected");
 
 app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
 
