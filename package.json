@@ -1,16 +1,13 @@
 {
   "name": "back-end",
   "version": "1.0.0",
-  "engines": {
-    "node": "14.x"
-  },
   "description": "back-end server for softuni react prokject",
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "build": "cd client && npm run build",
-    "install-client": "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build",
+    "build": "npm run build",
+    "install-client": "npm install",
+    "heroku-postbuild": "npm run build",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
