@@ -5,9 +5,6 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "build": "npm run build",
-    "install-client": "npm install",
-    "heroku-postbuild": "npm run build",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
