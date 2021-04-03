@@ -1,11 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import path from "path";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.js";
 import postRoutes from "./routes/post.js";
-import commentRoutes from "./routes/post.js";
+import commentRoutes from "./routes/comment.js";
 
 dotenv.config();
 

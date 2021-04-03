@@ -1,6 +1,7 @@
-import express from "express";
-
+import { Router } from "express";
 import { auth } from "../middleware/auth.js";
+
+const router = Router();
 
 import {
   allPosts,
@@ -11,8 +12,6 @@ import {
   likePost,
   dislikePost,
 } from "../controllers/posts.js";
-
-const router = express.Router();
 
 router.get("/", allPosts);
 router.get("/:id", getPost);
