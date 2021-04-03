@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Post from "../models/post.js";
 import User from "../models/user.js";
 
@@ -56,8 +55,8 @@ export const getPost = async (req, res) => {
 
 export const editPost = async (req, res) => {
   try {
-    const {title,content}=req.body;
-    console.log(title,content)
+    const { title, content } = req.body;
+    console.log(title, content);
     const post = await Post.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
@@ -71,12 +70,66 @@ export const editPost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
+    const user = await User.findByIdAndUpdate(req.user, {
+      $pull: { posts: req.params.id },
+    }).populate("likedBy", "_id username");
 
     if (!post) {
-      return res.status(404).send("No post with that id");
+      res.status(404).send("No post with that id");
     }
 
-    res.json({ message: "Post is been deleted." });
+    res.send({ message: `${user.username}delete this post.` });
+  } catch (err) {
+    console.log(err);
+    res.status(404).json({ message: "Something whent wrong" });
+  }
+};
+
+export const likePost = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    const post = await Post.findById(req.params.id);
+
+    const existingPost = await user.posts.includes(req.params.id);
+
+    if (!existingPost) {
+      let alreadyLiked = post.likedBy.includes(user._id);
+      console.log(alreadyLiked);
+      if (alreadyLiked === false) {
+        await Post.findByIdAndUpdate(req.params.id, {
+          $inc: { likes: +1 },
+          $push: { likedBy: user._id },
+        });
+
+        res.json({ message: "You liked the post." });
+      } else {
+        res.status(404).send(`You can't like your own post.`);
+      }
+    } else {
+      res.status(404).send(`Post with this id does not exist.`);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(404).json({ message: "Something whent wrong" });
+  }
+};
+
+export const dislikePost = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    const post = await Post.findById(req.params.id);
+
+    let alreadyLiked = await post.likedBy.includes(user._id);
+
+    if (alreadyLiked) {
+      await Post.findByIdAndUpdate(req.params.id, {
+        $inc: { likes: -1 },
+        $pull: { likedBy: user._id },
+      });
+      res.json({ message: "You disliked the post." });
+    } else {
+      res.status(404).send(`You can't dislike your own post.`);
+    }
   } catch (err) {
     console.log(err);
     res.status(404).json({ message: "Something whent wrong" });
