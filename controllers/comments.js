@@ -9,25 +9,20 @@ export const createComment = async (req, res) => {
       res.status(422).json({ error: "Please add all fields." });
     }
 
-    const newComment = new Comment({
+    const newComment =  new Comment({
       content,
       createdAt: new Date(),
       author: req.user,
+      post: postId,
     });
 
     const savedComment = await newComment.save();
 
-    await Post.findByIdAndUpdate(
-      postId,
-      {
-        $push: {
-          comments: savedComment,
-        },
-      },
+    const post = await Post.findByIdAndUpdate(postId, {
+      $push: { comments: savedComment },
+    });
 
-      { new: true }
-    ).populate("comments", "_id username");
-
+    console.log(post);
     res.json(savedComment);
     res.status(201);
   } catch (err) {
@@ -37,11 +32,8 @@ export const createComment = async (req, res) => {
 
 export const allComments = async (req, res) => {
   try {
-    const getAllComments = await Comment.find().populate(
-      "author",
-      "_id username"
-    );
-
+    const comments = await Post.findById(req.params.id);
+    console.log(comments);
     res.status(200).json(getAllComments);
   } catch (error) {
     res.status(404).json({ message: error.message });

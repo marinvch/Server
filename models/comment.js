@@ -9,14 +9,8 @@ const CommentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  postLink: {
-    type: String,
-  },
-  // References User collection
   author: {
-    type: mongoose.Types.ObjectId,
-    ref: "User",
-    required: true,
+    type: String,
   },
 
   post: {
