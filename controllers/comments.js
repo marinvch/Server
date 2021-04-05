@@ -23,6 +23,7 @@ export const createComment = async (req, res) => {
     const post = await Post.findByIdAndUpdate(postId, {
       $push: { comments: savedComment },
     });
+    
     res.json(post);
 
     res.status(201);
