@@ -1,5 +1,6 @@
 import Post from "../models/post.js";
 import Comment from "../models/comment.js";
+import User from "../models/user.js";
 
 export const createComment = async (req, res) => {
   try {
@@ -9,10 +10,11 @@ export const createComment = async (req, res) => {
       res.status(422).json({ error: "Please add all fields." });
     }
 
-    const newComment =  new Comment({
+
+    const newComment = new Comment({
       content,
       createdAt: new Date(),
-      author: req.user,
+      author,
       post: postId,
     });
 
@@ -21,9 +23,8 @@ export const createComment = async (req, res) => {
     const post = await Post.findByIdAndUpdate(postId, {
       $push: { comments: savedComment },
     });
+    res.json(post);
 
-    console.log(post);
-    res.json(savedComment);
     res.status(201);
   } catch (err) {
     res.status(409).json({ error: err.message });
@@ -33,7 +34,7 @@ export const createComment = async (req, res) => {
 export const allComments = async (req, res) => {
   try {
     const comments = await Post.findById(req.params.id);
-    console.log(comments);
+
     res.status(200).json(getAllComments);
   } catch (error) {
     res.status(404).json({ message: error.message });

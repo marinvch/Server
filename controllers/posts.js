@@ -46,7 +46,7 @@ export const allPosts = async (req, res) => {
 
 export const getPost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id).populate("comments");
     res.status(200).send(post);
   } catch (error) {
     res.status(409).json({ message: error.message });
