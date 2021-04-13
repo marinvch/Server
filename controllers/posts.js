@@ -27,16 +27,15 @@ export const createPost = async (req, res) => {
       $push: { posts: savedPost },
     });
 
-    res.json(savedPost);
-    res.status(201);
-  } catch (err) {
-    res.status(409).json({ error: err.message });
+    res.status(201).json(savedPost);
+  } catch (error) {
+    res.status(409).json({ message: error.message });
   }
 };
 
 export const allPosts = async (req, res) => {
   try {
-    const getAllPosts = await Post.find().populate("author", "_id username");
+    const getAllPosts = await Post.find().populate("author", "_id username ");
 
     res.status(200).json(getAllPosts);
   } catch (error) {
@@ -94,7 +93,7 @@ export const likePost = async (req, res) => {
 
     if (!existingPost) {
       let alreadyLiked = post.likedBy.includes(user._id);
-      console.log(alreadyLiked);
+
       if (alreadyLiked === false) {
         await Post.findByIdAndUpdate(req.params.id, {
           $inc: { likes: +1 },
@@ -103,13 +102,12 @@ export const likePost = async (req, res) => {
 
         res.json({ message: "You liked the post." });
       } else {
-        res.status(404).send(`You can't like your own post.`);
+        res.status(201).json({ message: `You already liked this post.` });
       }
     } else {
-      res.status(404).send(`Post with this id does not exist.`);
+      res.status(201).json({ message: `You can't like you own post.` });
     }
   } catch (err) {
-    console.log(err);
     res.status(404).json({ message: "Something whent wrong" });
   }
 };
@@ -121,17 +119,17 @@ export const dislikePost = async (req, res) => {
 
     let alreadyLiked = await post.likedBy.includes(user._id);
 
-    if (alreadyLiked) {
+    if (alreadyLiked === true) {
       await Post.findByIdAndUpdate(req.params.id, {
         $inc: { likes: -1 },
         $pull: { likedBy: user._id },
       });
+
       res.json({ message: "You disliked the post." });
     } else {
-      res.status(404).send(`You can't dislike your own post.`);
+      res.status(201).json({ message: "You can't disliked the post." });
     }
   } catch (err) {
-    console.log(err);
     res.status(404).json({ message: "Something whent wrong" });
   }
 };
